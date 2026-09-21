@@ -10,8 +10,8 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 entity scopeFace is
     PORT ( 	clk: in  STD_LOGIC;
          resetn : in  STD_LOGIC;
-         pixelHorz : in  STD_LOGIC_VECTOR(VIDEO_WIDTH_IN_BITS - 1 downto 0);
-         pixelVert : in  STD_LOGIC_VECTOR(VIDEO_WIDTH_IN_BITS -1 downto 0);
+         pixelH : in  STD_LOGIC_VECTOR(VIDEO_WIDTH_IN_BITS - 1 downto 0);
+         pixelV : in  STD_LOGIC_VECTOR(VIDEO_WIDTH_IN_BITS -1 downto 0);
          triggerVolt: in STD_LOGIC_VECTOR (VIDEO_WIDTH_IN_BITS - 1 downto 0);
          triggerTime: in STD_LOGIC_VECTOR (VIDEO_WIDTH_IN_BITS - 1 downto 0);
          red : out  STD_LOGIC_VECTOR(7 downto 0);
@@ -30,10 +30,126 @@ architecture Behavioral of scopeFace is
     -- cordinate.  These act like Feature Booleans which you will use in the process(clk) to set the 
     -- correct RGB for this pixel location. Finish and add more.
     signal borderH, borderV : STD_LOGIC;
+    signal reticleH : STD_LOGIC;
+    signal reticleV : STD_LOGIC;
+    signal timeMarker : STD_LOGIC;
+    signal voltMarker : STD_LOGIC;
+    signal hatchH : STD_LOGIC;
+    signal hatchV : STD_LOGIC;
+    
 
 
 
 begin
+    hatchH <= '1' when (pixelV <= 253) and (pixelV >= 247) and
+        (
+            pixelH = 140
+            or pixelH = 160
+            or pixelH = 180
+            or pixelH = 200
+            or pixelH = 220
+            or pixelH = 240
+            or pixelH = 260
+            or pixelH = 280
+            or pixelH = 300
+            or pixelH = 320
+            or pixelH = 340
+            or pixelH = 360
+            or pixelH = 380
+            or pixelH = 400
+            or pixelH = 420
+            or pixelH = 440
+            or pixelH = 460
+            or pixelH = 480
+            or pixelH = 500
+            or pixelH = 520
+            or pixelH = 540
+            or pixelH = 560
+            or pixelH = 580
+            or pixelH = 600
+            or pixelH = 620
+            or pixelH = 640
+            or pixelH = 660
+            or pixelH = 680
+            or pixelH = 700
+            or pixelH = 720
+            or pixelH = 740
+            or pixelH = 760
+            or pixelH = 780
+            or pixelH = 800
+            or pixelH = 820
+            or pixelH = 840
+            or pixelH = 860
+            or pixelH = 880
+            or pixelH = 900
+            or pixelH = 920
+            or pixelH = 940
+            or pixelH = 960
+            or pixelH = 980
+            or pixelH = 1000
+            or pixelH = 1020
+            or pixelH = 1040
+            or pixelH = 1060
+            or pixelH = 1080
+            or pixelH = 1100
+            or pixelH = 1120
+        )
+        else '0';
+    
+    hatchV <= '1' when (pixelH <= 503) and (pixelH >= 497) and
+        (
+            pixelV = 110
+            or pixelV = 120
+            or pixelV = 130
+            or pixelV = 140
+            or pixelV = 150
+            or pixelV = 160
+            or pixelV = 170
+            or pixelV = 180
+            or pixelV = 190
+            or pixelV = 200
+            or pixelV = 210
+            or pixelV = 220
+            or pixelV = 230
+            or pixelV = 240
+            or pixelV = 250
+            or pixelV = 260
+            or pixelV = 270
+            or pixelV = 280
+            or pixelV = 290
+            or pixelV = 300
+            or pixelV = 310
+            or pixelV = 320
+            or pixelV = 330
+            or pixelV = 340
+            or pixelV = 350
+            or pixelV = 360
+            or pixelV = 370
+            or pixelV = 380
+            or pixelV = 390
+            or pixelV = 400
+            or pixelV = 410
+            or pixelV = 420
+            or pixelV = 430
+            or pixelV = 440
+            or pixelV = 450
+            or pixelV = 460
+            or pixelV = 470
+            or pixelV = 480
+            or pixelV = 490
+            or pixelV = 500
+            or pixelV = 510
+            or pixelV = 520
+            or pixelV = 530
+            or pixelV = 540
+            or pixelV = 550
+            or pixelV = 560
+            or pixelV = 570
+            or pixelV = 580
+            or pixelV = 590
+            or pixelV = 600
+        )
+        else '0';
 
 
     ---------------------------------------------------------------------
