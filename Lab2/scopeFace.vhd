@@ -6,6 +6,7 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
+use work.scopeToHdmi_package.all;
 
 entity scopeFace is
     PORT ( 	clk: in  STD_LOGIC;
@@ -168,7 +169,10 @@ begin
                     red <= BORDER_R;
                     green <= BORDER_G;
                     blue <= BORDER_B;
-                elsif 
+                elsif (hatchV = '1' or hatchH = '1') then
+                    red <= GRID_R;
+                    green <= GRID_G;
+                    blue <= GRID_B;
 
                     <add elsif for each Feature Boolean>
               

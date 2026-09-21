@@ -48,33 +48,33 @@ package scopeToHdmi_package is
     constant V_BP : STD_LOGIC_VECTOR(VIDEO_WIDTH_IN_BITS-1 downto 0) := std_logic_vector(to_unsigned(20, VIDEO_WIDTH_IN_BITS));
     constant V_TOTAL : STD_LOGIC_VECTOR(VIDEO_WIDTH_IN_BITS-1 downto 0) := V_ACTIVE + V_FP + V_SYNC + V_BP;
         
-    constant L_EDGE 
-    constant R_EDGE 
-    constant WIDTH 
+    constant L_EDGE : STD_LOGIC_VECTOR(VIDEO_WIDTH_IN_BITS-1 downto 0) := std_logic_vector(to_unsigned(140, VIDEO_WIDTH_IN_BITS));
+    constant R_EDGE : STD_LOGIC_VECTOR(VIDEO_WIDTH_IN_BITS-1 downto 0) := std_logic_vector(to_unsigned(1140, VIDEO_WIDTH_IN_BITS));
+    constant WIDTH : STD_LOGIC_VECTOR(VIDEO_WIDTH_IN_BITS-1 downto 0) := R_EDGE - L_EDGE;
 
-    constant T_EDGE 
-    constant B_EDGE 
-    constant HEIGHT 
+    constant T_EDGE : STD_LOGIC_VECTOR(VIDEO_WIDTH_IN_BITS-1 downto 0) := std_logic_vector(to_unsigned(110, VIDEO_WIDTH_IN_BITS));
+    constant B_EDGE : STD_LOGIC_VECTOR(VIDEO_WIDTH_IN_BITS-1 downto 0) := std_logic_vector(to_unsigned(610, VIDEO_WIDTH_IN_BITS));
+    constant HEIGHT : STD_LOGIC_VECTOR(VIDEO_WIDTH_IN_BITS-1 downto 0) := B_EDGE - T_EDGE;
 	
     -- This is actually half of the width
-    constant BORDER_LINE_WIDTH 
+    constant BORDER_LINE_WIDTH : STD_LOGIC_VECTOR(VIDEO_WIDTH_IN_BITS-1 downto 0) := std_logic_vector(to_unsigned(7, VIDEO_WIDTH_IN_BITS));
 
 	-- RGB color values
     constant BORDER_R : STD_LOGIC_VECTOR(7 downto 0) := X"FF";
     constant BORDER_G : STD_LOGIC_VECTOR(7 downto 0) := X"FF";
     constant BORDER_B : STD_LOGIC_VECTOR(7 downto 0) := X"FF";
 
-    constant GRID_R 
-    constant GRID_G 
-    constant GRID_B 
+    constant GRID_R : STD_LOGIC_VECTOR(7 downto 0) := X"C8";
+    constant GRID_G : STD_LOGIC_VECTOR(7 downto 0) := X"C8";
+    constant GRID_B : STD_LOGIC_VECTOR(7 downto 0) := X"C8";
 
-    constant CH1_R 
-    constant CH1_G
-    constant CH1_B 
+    constant CH1_R : STD_LOGIC_VECTOR(7 downto 0) := X"FF";
+    constant CH1_G : STD_LOGIC_VECTOR(7 downto 0) := X"FF";
+    constant CH1_B : STD_LOGIC_VECTOR(7 downto 0) := X"00";
 
-    constant CH2_R
-    constant CH2_G
-    constant CH2_B
+    constant CH2_R : STD_LOGIC_VECTOR(7 downto 0) := X"00";
+    constant CH2_G : STD_LOGIC_VECTOR(7 downto 0) := X"FF";
+    constant CH2_B : STD_LOGIC_VECTOR(7 downto 0) := X"00";
 
     constant TRIGGER_R 
     constant TRIGGER_G 
