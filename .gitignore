@@ -1,0 +1,10 @@
+# Ignore everything
+*
+
+# Allow directory traversal
+!*/
+
+# Whitelist VHDL files only
+!*.vhd
+!*.vhdl
+!*.gitignore
