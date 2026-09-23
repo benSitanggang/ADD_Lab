@@ -61,9 +61,26 @@ begin
                   blue => blue);
                  
 
-    hdmi_inst: hdmi_0
+    hdmi_inst: hdmi_tx_0
         PORT MAP (
-            pix_clk => videoClk,	<other stuff>	);
+            pix_clk => videoClk,
+            pix_clkx5 => videoClk5x,
+            rst => reset,
+            hsync => hs,
+            vsync => vs,
+            vde => de,
+            pix_clk_locked => clkLocked,
+            red => red,
+            green => green,
+            blue => blue,
+            TMDS_DATA_P => tmdsDataP,
+            TMDS_DATA_N => tmdsDataN,
+            TMDS_CLK_P => tmdsClkP,
+            TMDS_CLK_N => tmdsClkN,
+            aux0_din => "0000",
+            aux1_din => "0000",
+            aux2_din => "0000",
+            ade => '0');
             
 
     vc: clk_wiz_0
@@ -119,5 +136,6 @@ begin
     ch1Wave <= '1' when  (pixelHorz = pixelVert) else '0';
     ch2Wave <= '1' when  (pixelVert = triggerVolt) else '0';
     reset <= not resetn;
+    hdmiOen <= '1';
 
 end structure;

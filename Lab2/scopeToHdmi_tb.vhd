@@ -45,7 +45,7 @@ BEGIN
         wait for clk_period/2;
     end process;
 
-    resetn_t <= '0', '1' after 30nS;
+    resetn_t <= '0', '1' after 30ns;
 
 
-END;
+END behavior;
