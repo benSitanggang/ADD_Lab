@@ -42,6 +42,26 @@ architecture Behavioral of scopeFace is
 
 
 begin
+voltMarker <= '1' when (pixelH = L_EDGE + BORDER_LINE_WIDTH + 1 and pixelV <= triggerVolt + 7 and pixelV >= triggerVolt - 7)
+or (pixelH = L_EDGE + BORDER_LINE_WIDTH + 2 and pixelV <= triggerVolt + 6 and pixelV >= triggerVolt - 6)
+or (pixelH = L_EDGE + BORDER_LINE_WIDTH + 3 and pixelV <= triggerVolt + 5 and pixelV >= triggerVolt - 5)
+or (pixelH = L_EDGE + BORDER_LINE_WIDTH + 4 and pixelV <= triggerVolt + 4 and pixelV >= triggerVolt - 4)
+or (pixelH = L_EDGE + BORDER_LINE_WIDTH + 5 and pixelV <= triggerVolt + 3 and pixelV >= triggerVolt - 3)
+or (pixelH = L_EDGE + BORDER_LINE_WIDTH + 6 and pixelV <= triggerVolt + 2 and pixelV >= triggerVolt - 2)
+or (pixelH = L_EDGE + BORDER_LINE_WIDTH + 7 and pixelV <= triggerVolt + 1 and pixelV >= triggerVolt - 1)
+or (pixelH = L_EDGE + BORDER_LINE_WIDTH + 8 and pixelV <= triggerVolt + 0 and pixelV >= triggerVolt - 0)
+else '0';
+
+timeMarker <= '1' when (pixelV = T_EDGE + BORDER_LINE_WIDTH + 1 and pixelH <= triggerTime + 7 and pixelH >= triggerTime - 7)
+or (pixelV = T_EDGE + BORDER_LINE_WIDTH + 2 and pixelH <= triggerTime + 6 and pixelH >= triggerTime - 6)
+or (pixelV = T_EDGE + BORDER_LINE_WIDTH + 3 and pixelH <= triggerTime + 5 and pixelH >= triggerTime - 5)
+or (pixelV = T_EDGE + BORDER_LINE_WIDTH + 4 and pixelH <= triggerTime + 4 and pixelH >= triggerTime - 4)
+or (pixelV = T_EDGE + BORDER_LINE_WIDTH + 5 and pixelH <= triggerTime + 3 and pixelH >= triggerTime - 3)
+or (pixelV = T_EDGE + BORDER_LINE_WIDTH + 6 and pixelH <= triggerTime + 2 and pixelH >= triggerTime - 2)
+or (pixelV = T_EDGE + BORDER_LINE_WIDTH + 7 and pixelH <= triggerTime + 1 and pixelH >= triggerTime - 1)
+or (pixelV = T_EDGE + BORDER_LINE_WIDTH + 8 and pixelH <= triggerTime + 0 and pixelH >= triggerTime - 0)
+else '0';
+
 gridH <= '1' when pixelH >= L_EDGE and pixelH <= R_EDGE and (
     pixelV = 110
     or pixelV = 160

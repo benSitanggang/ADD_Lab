@@ -23,7 +23,17 @@ print(f"""{MARK_VOLT} <= '1' when """, end='')
 for i in range(MARKER_HALF_BASE + 1):
     if i > 0:
         print('or ', end='')
-    print(f"pixelH = L_EDGE + BORDER_LINE_WIDTH + {i+1} and pixelV <= triggerVolt + {MARKER_HALF_BASE-i} and pixelV >= triggerVolt - {MARKER_HALF_BASE-i}")
+    print(f"(pixelH = L_EDGE + BORDER_LINE_WIDTH + {i+1} and pixelV <= triggerVolt + {MARKER_HALF_BASE-i} and pixelV >= triggerVolt - {MARKER_HALF_BASE-i})")
+print("else '0';")
+print()
+
+# Horizontal (Time) Trigger Marker
+print(f"""{MARK_TIME} <= '1' when """, end='')
+for i in range(MARKER_HALF_BASE + 1):
+    if i > 0:
+        print('or ', end='')
+    print(f"(pixelV = T_EDGE + BORDER_LINE_WIDTH + {i+1} and pixelH <= triggerTime + {MARKER_HALF_BASE-i} and pixelH >= triggerTime - {MARKER_HALF_BASE-i})")
+print("else '0';")
 print()
 """
 {MARK_VOLT} <= '1' when pixelH = L_EDGE + BORDER_LINE_WIDTH + 1 and pixelV <= triggerVolt + {MARKER_HALF_BASE} and pixelV >= triggerVolt - {MARKER_HALF_BASE}
