@@ -42,6 +42,12 @@ architecture Behavioral of scopeFace is
 
 
 begin
+
+-- Left and Right edges
+borderV <= '1' when ((pixelV < L_EDGE + BORDER_LINE_WIDTH and pixelV >= L_EDGE) or (pixelV > R_EDGE - BORDER_LINE_WIDTH and pixelV <= R_EDGE)) else '0';
+-- Top and Bottom edges
+borderH <= '1' when ((pixelH = T_EDGE) or (pixelH = B_EDGE)) else '0';
+
 voltMarker <= '1' when (pixelH = L_EDGE + BORDER_LINE_WIDTH + 1 and pixelV <= triggerVolt + 7 and pixelV >= triggerVolt - 7)
 or (pixelH = L_EDGE + BORDER_LINE_WIDTH + 2 and pixelV <= triggerVolt + 6 and pixelV >= triggerVolt - 6)
 or (pixelH = L_EDGE + BORDER_LINE_WIDTH + 3 and pixelV <= triggerVolt + 5 and pixelV >= triggerVolt - 5)
@@ -88,7 +94,7 @@ gridV <= '1' when pixelV >= T_EDGE and pixelV <= B_EDGE and (
     or pixelH = 1040
 ) else '0';
 
-hatchH <= '1' when (pixelV <= 253) and (pixelV >= 247) and
+hatchH <= '1' when (pixelV <= 363) and (pixelV >= 357) and
     (
         pixelH = 140
         or pixelH = 160
@@ -143,7 +149,7 @@ hatchH <= '1' when (pixelV <= 253) and (pixelV >= 247) and
     )
     else '0';
 
-hatchV <= '1' when (pixelH <= 503) and (pixelH >= 497) and
+hatchV <= '1' when (pixelH <= 643) and (pixelH >= 637) and
     (
         pixelV = 110
         or pixelV = 120
@@ -215,13 +221,26 @@ hatchV <= '1' when (pixelH <= 503) and (pixelH >= 497) and
                     red <= BORDER_R;
                     green <= BORDER_G;
                     blue <= BORDER_B;
+                elsif (ch1 = '1' and ch1Enb = '1') then
+                    red <= CH1_R;
+                    green <= CH1_G;
+                    blue <= CH1_B;
+                elsif (ch2 = '1' and ch2Enb = '1') then
+                    red <= CH2_R;
+                    green <= CH2_G;
+                    blue <= CH2_B;
+                elsif (voltMarker = '1' or timeMarker = '1') then
+                    red <= TRIGGER_R;
+                    green <= TRIGGER_G;
+                    blue <= TRIGGER_B;
                 elsif (hatchV = '1' or hatchH = '1') then
                     red <= GRID_R;
                     green <= GRID_G;
                     blue <= GRID_B;
-
-                    <add elsif for each Feature Boolean>
-              
+                elsif (gridV = '1' or gridH = '1') then
+                    red <= GRID_R;
+                    green <= GRID_G;
+                    blue <= GRID_B;
                 else
                     red <= X"00";
                     green <= X"00";
@@ -230,10 +249,6 @@ hatchV <= '1' when (pixelH <= 503) and (pixelH >= 497) and
             end if;
         end if;
     end process;
-
-
-    borderH <=	'1' when <lots of stuff> else '0';
-    borderV <=	'1' when <lots of stuff> else '0';
   
 
 end Behavioral;

@@ -57,16 +57,16 @@ package scopeToHdmi_package is
     constant HEIGHT : STD_LOGIC_VECTOR(VIDEO_WIDTH_IN_BITS-1 downto 0) := B_EDGE - T_EDGE;
 	
     -- This is actually half of the width
-    constant BORDER_LINE_WIDTH : STD_LOGIC_VECTOR(VIDEO_WIDTH_IN_BITS-1 downto 0) := std_logic_vector(to_unsigned(7, VIDEO_WIDTH_IN_BITS));
+    constant BORDER_LINE_WIDTH : STD_LOGIC_VECTOR(VIDEO_WIDTH_IN_BITS-1 downto 0) := std_logic_vector(to_unsigned(10, VIDEO_WIDTH_IN_BITS));
 
 	-- RGB color values
     constant BORDER_R : STD_LOGIC_VECTOR(7 downto 0) := X"FF";
     constant BORDER_G : STD_LOGIC_VECTOR(7 downto 0) := X"FF";
     constant BORDER_B : STD_LOGIC_VECTOR(7 downto 0) := X"FF";
 
-    constant GRID_R : STD_LOGIC_VECTOR(7 downto 0) := X"C8";
-    constant GRID_G : STD_LOGIC_VECTOR(7 downto 0) := X"C8";
-    constant GRID_B : STD_LOGIC_VECTOR(7 downto 0) := X"C8";
+    constant GRID_R : STD_LOGIC_VECTOR(7 downto 0) := X"40";
+    constant GRID_G : STD_LOGIC_VECTOR(7 downto 0) := X"40";
+    constant GRID_B : STD_LOGIC_VECTOR(7 downto 0) := X"40";
 
     constant CH1_R : STD_LOGIC_VECTOR(7 downto 0) := X"FF";
     constant CH1_G : STD_LOGIC_VECTOR(7 downto 0) := X"FF";

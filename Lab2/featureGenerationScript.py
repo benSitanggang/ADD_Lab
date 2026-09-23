@@ -18,6 +18,8 @@ hatch_interval_v = WINDOW_HEIGHT / 50
 midpoint_h = WINDOW_WIDTH / 2
 midpoint_v = WINDOW_HEIGHT / 2
 
+# Vertical Border
+
 # Vertical (Voltage) Trigger Marker
 print(f"""{MARK_VOLT} <= '1' when """, end='')
 for i in range(MARKER_HALF_BASE + 1):
@@ -63,7 +65,7 @@ print(f") else '0';")
 print()
 
 # Hatch marks on horizontal line
-print(f"""{SIGNAL_HORZ} <= '1' when (pixelV <= {int(midpoint_v + HATCH_WIDTH)}) and (pixelV >= {int(midpoint_v - HATCH_WIDTH)}) and
+print(f"""{SIGNAL_HORZ} <= '1' when (pixelV <= {int(WINDOW_TOP + midpoint_v + HATCH_WIDTH)}) and (pixelV >= {int(WINDOW_TOP + midpoint_v - HATCH_WIDTH)}) and
     (""")
 print(f'        pixelH = {WINDOW_LEFT}')
 h_pos = int(WINDOW_LEFT + hatch_interval_h)
@@ -76,7 +78,7 @@ print(f"""    )
 print()
 
 # Hatch marks on verticle line
-print(f"""{SIGNAL_VERT} <= '1' when (pixelH <= {int(midpoint_h + HATCH_WIDTH)}) and (pixelH >= {int(midpoint_h - HATCH_WIDTH)}) and
+print(f"""{SIGNAL_VERT} <= '1' when (pixelH <= {int(WINDOW_LEFT + midpoint_h + HATCH_WIDTH)}) and (pixelH >= {int(WINDOW_LEFT + midpoint_h - HATCH_WIDTH)}) and
     (""")
 print(f'        pixelV = {WINDOW_TOP}')
 v_pos = int(WINDOW_TOP + hatch_interval_v)

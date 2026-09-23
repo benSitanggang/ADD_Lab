@@ -27,18 +27,38 @@ architecture structure of scopeToHdmi is
     signal pixelHorz, pixelVert: STD_LOGIC_VECTOR(VIDEO_WIDTH_IN_BITS - 1 downto 0);
 	    
     signal ch1Wave, ch2Wave: STD_LOGIC;
-
+    signal hs, vs, de: STD_LOGIC;
+    signal reset: STD_LOGIC;
     signal videoClk, videoClk5x, clkLocked: STD_LOGIC;
+    signal prevButton, currButton, activeButton: STD_LOGIC_VECTOR(2 downto 0);
 
 begin
 
 
     vsg: videoSignalGenerator
-        PORT MAP (clk => videoClk, <other stuff>	);
+        PORT MAP (clk => videoClk,
+                  resetn => resetn,
+                  hs => hs,
+                  vs => vs,
+                  de => de,
+                  pixelHorz => pixelHorz,
+                  pixelVert => pixelVert);
                  
 
     sf: scopeFace
-        PORT MAP (clk => videoClk,	<other stuff>	);
+        PORT MAP (clk => videoClk,
+                  resetn => resetn,
+                  pixelH => pixelHorz,
+                  pixelV => pixelVert,
+                  triggerTime => triggerTime,
+                  triggerVolt => triggerVolt,
+                  ch1 => ch1Wave,
+                  ch1Enb => '1',
+                  ch2 => ch2Wave,
+                  ch2Enb => '1',
+                  red => red,
+                  green => green,
+                  blue => blue);
                  
 
     hdmi_inst: hdmi_0
@@ -59,9 +79,45 @@ begin
     -- has change state.  Use this change vector to determine if you should 
     -- increment/decrement the triggerTime or triggerVolt values
     ------------------------------------------------------------------------------
- 
+    process(sysClk)
+    begin
+        if rising_edge(sysClk) then
+            if resetn = '0' then
+                prevButton <= "111";
+                currButton <= "111";
+            else
+                prevButton <= currButton;
+                currButton <= btn;
+            end if;
+        end if;
+    end process;
+    
+    process(sysClk)
+    begin
+        if rising_edge(sysClk) then
+            if resetn = '0' then
+                triggerVolt <= std_logic_vector(to_unsigned(360, VIDEO_WIDTH_IN_BITS));
+                triggerTime <= std_logic_vector(to_unsigned(640, VIDEO_WIDTH_IN_BITS));
+            elsif activeButton(1) = '1' and btn(1) = '1' then
+                if btn(2) = '1' then
+                    triggerVolt <= triggerVolt + 10;
+                else
+                    triggerVolt <= triggerVolt - 10;
+                end if;
+            elsif activeButton(0) = '1' and btn(0) = '1' then
+                if btn(2) = '1' then
+                    triggerTime <= triggerTime + 10;
+                else
+                    triggerTime <= triggerTime - 10;
+                end if;
+            end if;
+        end if;
+    end process;
+    
+    activeButton <= prevButton xor currButton;
 
     ch1Wave <= '1' when  (pixelHorz = pixelVert) else '0';
     ch2Wave <= '1' when  (pixelVert = triggerVolt) else '0';
+    reset <= not resetn;
 
 end structure;
