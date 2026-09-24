@@ -96,9 +96,9 @@ begin
     -- has change state.  Use this change vector to determine if you should 
     -- increment/decrement the triggerTime or triggerVolt values
     ------------------------------------------------------------------------------
-    process(sysClk)
+    process(videoClk)
     begin
-        if rising_edge(sysClk) then
+        if rising_edge(videoClk) then
             if resetn = '0' then
                 prevButton <= "111";
                 currButton <= "111";
@@ -109,9 +109,9 @@ begin
         end if;
     end process;
     
-    process(sysClk)
+    process(videoClk)
     begin
-        if rising_edge(sysClk) then
+        if rising_edge(videoClk) then
             if resetn = '0' then
                 triggerVolt <= std_logic_vector(to_unsigned(360, VIDEO_WIDTH_IN_BITS));
                 triggerTime <= std_logic_vector(to_unsigned(640, VIDEO_WIDTH_IN_BITS));

@@ -37,6 +37,8 @@ architecture Behavioral of scopeFace is
     signal voltMarker : STD_LOGIC;
     signal hatchH : STD_LOGIC;
     signal hatchV : STD_LOGIC;
+    signal drawCh1: STD_LOGIC;
+    signal drawCh2: STD_LOGIC;
     
 
 
@@ -47,6 +49,24 @@ begin
 borderV <= '1' when ((pixelV < L_EDGE + BORDER_LINE_WIDTH and pixelV >= L_EDGE) or (pixelV > R_EDGE - BORDER_LINE_WIDTH and pixelV <= R_EDGE)) else '0';
 -- Top and Bottom edges
 borderH <= '1' when ((pixelH = T_EDGE) or (pixelH = B_EDGE)) else '0';
+
+drawCh1 <= '1' when (
+    pixelH >= L_EDGE and
+    pixelH <= R_EDGE and
+    pixelV >= T_EDGE and
+    pixelV <= B_EDGE and
+    ch1 = '1' and
+    ch1Enb = '1'
+) else '0';
+
+drawCh2 <= '1' when (
+    pixelH >= L_EDGE and
+    pixelH <= R_EDGE and
+    pixelV >= T_EDGE and
+    pixelV <= B_EDGE and
+    ch2 = '1' and
+    ch2Enb = '1'
+) else '0';
 
 voltMarker <= '1' when (pixelH = L_EDGE + BORDER_LINE_WIDTH + 1 and pixelV <= triggerVolt + 7 and pixelV >= triggerVolt - 7)
 or (pixelH = L_EDGE + BORDER_LINE_WIDTH + 2 and pixelV <= triggerVolt + 6 and pixelV >= triggerVolt - 6)
@@ -221,11 +241,11 @@ hatchV <= '1' when (pixelH <= 643) and (pixelH >= 637) and
                     red <= BORDER_R;
                     green <= BORDER_G;
                     blue <= BORDER_B;
-                elsif (ch1 = '1' and ch1Enb = '1') then
+                elsif drawCh1 = '1' then
                     red <= CH1_R;
                     green <= CH1_G;
                     blue <= CH1_B;
-                elsif (ch2 = '1' and ch2Enb = '1') then
+                elsif drawCh2 = '1' then
                     red <= CH2_R;
                     green <= CH2_G;
                     blue <= CH2_B;
