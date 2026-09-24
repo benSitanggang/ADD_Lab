@@ -60,7 +60,7 @@ package scopeToHdmi_package is
     constant M_VERT: STD_LOGIC_VECTOR(VIDEO_WIDTH_IN_BITS-1 downto 0) := std_logic_vector(to_unsigned(360, VIDEO_WIDTH_IN_BITS));
     
     -- This is actually half of the width
-    constant BORDER_LINE_WIDTH: STD_LOGIC_VECTOR(VIDEO_WIDTH_IN_BITS-1 downto 0) := std_logic_vector(to_unsigned(7, VIDEO_WIDTH_IN_BITS));
+    constant BORDER_LINE_WIDTH: STD_LOGIC_VECTOR(VIDEO_WIDTH_IN_BITS-1 downto 0) := std_logic_vector(to_unsigned(3, VIDEO_WIDTH_IN_BITS));
     -- constant GRID_LINE_WIDTH: STD_LOGIC_VECTOR(VIDEO_WIDTH_IN_BITS-1 downto 0) := std_logic_vector(to_unsigned(7, VIDEO_WIDTH_IN_BITS));
     -- constant HATCH_LINE_WIDTH: STD_LOGIC_VECTOR(VIDEO_WIDTH_IN_BITS-1 downto 0) := std_logic_vector(to_unsigned(7, VIDEO_WIDTH_IN_BITS));
     -- constant TRIGGER_LINE_WIDTH: STD_LOGIC_VECTOR(VIDEO_WIDTH_IN_BITS-1 downto 0) := std_logic_vector(to_unsigned(7, VIDEO_WIDTH_IN_BITS));
@@ -72,13 +72,13 @@ package scopeToHdmi_package is
     constant BORDER_G : STD_LOGIC_VECTOR(7 downto 0) := X"FF";
     constant BORDER_B : STD_LOGIC_VECTOR(7 downto 0) := X"FF";
 
-    constant GRID_R : STD_LOGIC_VECTOR(7 downto 0) := X"40";
-    constant GRID_G : STD_LOGIC_VECTOR(7 downto 0) := X"40";
-    constant GRID_B : STD_LOGIC_VECTOR(7 downto 0) := X"40";
+    constant GRID_R : STD_LOGIC_VECTOR(7 downto 0) := X"FF";
+    constant GRID_G : STD_LOGIC_VECTOR(7 downto 0) := X"67";
+    constant GRID_B : STD_LOGIC_VECTOR(7 downto 0) := X"00";
     
-    constant HATCH_R : STD_LOGIC_VECTOR(7 downto 0) := X"40";
-    constant HATCH_G : STD_LOGIC_VECTOR(7 downto 0) := X"40";
-    constant HATCH_B : STD_LOGIC_VECTOR(7 downto 0) := X"40";
+    constant HATCH_R : STD_LOGIC_VECTOR(7 downto 0) := X"C0";
+    constant HATCH_G : STD_LOGIC_VECTOR(7 downto 0) := X"C0";
+    constant HATCH_B : STD_LOGIC_VECTOR(7 downto 0) := X"C0";
 
     constant CH1_R : STD_LOGIC_VECTOR(7 downto 0) := X"FF";
     constant CH1_G: STD_LOGIC_VECTOR(7 downto 0) := X"FF";
@@ -88,9 +88,13 @@ package scopeToHdmi_package is
     constant CH2_G: STD_LOGIC_VECTOR(7 downto 0) := X"FF";
     constant CH2_B: STD_LOGIC_VECTOR(7 downto 0) := X"00";
 
-    constant TRIGGER_R : STD_LOGIC_VECTOR(7 downto 0) := X"00";
-    constant TRIGGER_G : STD_LOGIC_VECTOR(7 downto 0) := X"FF";
-    constant TRIGGER_B : STD_LOGIC_VECTOR(7 downto 0) := X"FF";
+    constant T_TRIGGER_R : STD_LOGIC_VECTOR(7 downto 0) := X"1A";
+    constant T_TRIGGER_G : STD_LOGIC_VECTOR(7 downto 0) := X"43";
+    constant T_TRIGGER_B : STD_LOGIC_VECTOR(7 downto 0) := X"BF";
+
+    constant V_TRIGGER_R : STD_LOGIC_VECTOR(7 downto 0) := X"1A";
+    constant V_TRIGGER_G : STD_LOGIC_VECTOR(7 downto 0) := X"43";
+    constant V_TRIGGER_B : STD_LOGIC_VECTOR(7 downto 0) := X"BF";
 
 
 component videoSignalGenerator is
@@ -109,10 +113,10 @@ component scopeFace is
     PORT ( 	
             clk: in STD_LOGIC;
             resetn: in STD_LOGIC;
-            pixelH: in STD_LOGIC;
-            pixelV: in STD_LOGIC;
-            triggerTime: in STD_LOGIC;
-            triggerVolt: in STD_LOGIC;
+            pixelH: in STD_LOGIC_VECTOR(VIDEO_WIDTH_IN_BITS-1 downto 0);
+            pixelV: in STD_LOGIC_VECTOR(VIDEO_WIDTH_IN_BITS-1 downto 0);
+            triggerTime: in STD_LOGIC_VECTOR(VIDEO_WIDTH_IN_BITS-1 downto 0);
+            triggerVolt: in STD_LOGIC_VECTOR(VIDEO_WIDTH_IN_BITS-1 downto 0);
             ch1: in STD_LOGIC;
             ch1enb: in STD_LOGIC;
             ch2: in STD_LOGIC;
