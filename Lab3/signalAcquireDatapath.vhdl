@@ -42,7 +42,7 @@ architecture behavior of signalAcquire_Datapath is
   	signal longCnt: STD_LOGIC_VECTOR(LONG_DELAY_50Mhz_CONST_WIDTH - 1 downto 0);
 
 begin
-    -- TODO: CSAs for cw and sw
+    -- TODO: CSAs for cw
     channelRF: generic8RegisterFile
         generic map(16)
         port map(
@@ -114,5 +114,16 @@ begin
             l => open,
             e => eqLong
         );
+    
+    -- Control Word CSAs
+    rfWrite <= cw(REG_FILE_WRITE_CW_BIT_INDEX);
+    addrCtrl <= cw(ADDR_CTRL_CW_INDEX1 downto ADDR_CTRL_CW_INDEX0);
+    shortCtrl <= cw(SHORT_CTRL_CW_INDEX1 downto SHORT_CTRL_CW_INDEX0);
+    longCtrl <= cw(LONG_CTRL_CW_INDEX1 downto LONG_CTRL_CW_INDEX0);
+    
+    -- Status Word CSAs
+    sw(ALL_CHANNELS_HAVE_BEEN_READ_SW_BIT_INDEX) <= rfFull;
+    sw(SHORT_DELAY_DONE_SW_BIT_INDEX) <= eqShort;
+    sw(LONG_DELAY_DONE_SW_BIT_INDEX) <= eqLong;
 
 end behavior;
