@@ -60,13 +60,28 @@ CONSTANT THIRD_THRESHOLD_CONSTANT : STD_LOGIC_VECTOR(15 downto 0) := x"32B0";
 CONSTANT SECOND_THRESHOLD_CONSTANT : STD_LOGIC_VECTOR(15 downto 0)   := x"21CA";
 CONSTANT FIRST_THRESHOLD_CONSTANT : STD_LOGIC_VECTOR(15 downto 0)   := x"10E5";
 
--- component signalAcquire_Fsm is
--- You need to complete this declaration
+component signalAcquire_Fsm is
+    port (
+        clk: in STD_LOGIC;
+        resetn: in STD_LOGIC;
+        sw: in STD_LOGIC_VECTOR(SW_WIDTH - 1 downto 0);
+        cw: out STD_LOGIC_VECTOR (CW_WIDTH - 1 downto 0)
+    );
+end component;
 
--- component signalAcquire_Datapath is
--- You need to complete this declaration
+component signalAcquire_Datapath is
+    port (
+        clk : in  STD_LOGIC;
+        resetn : in  STD_LOGIC;
+		cw : in STD_LOGIC_VECTOR(CW_WIDTH -1 downto 0);
+		sw : out STD_LOGIC_VECTOR(DATAPATH_SW_WIDTH - 1 downto 0);
+		an7606data: in STD_LOGIC_VECTOR(15 downto 0);
+		rfAddr: in STD_LOGIC_VECTOR(2 downto 0);
+		rfData: out STD_LOGIC_VECTOR(15 downto 0)
+    );
+end component;
 
-type state_type is (RESET_STATE, LONG_DELAY_STATE,
+type state_type is (RESET_STATE, LONG_DELAY_STATE, RESET_ADC_STATE,
 WAIT_TRIGGER_STATE, ASSERT_CONVST_STATE, WAIT_BUSY0_STATE,
 WAIT_BUSY1_STATE, WAIT_DATA_STATE, LATCH_STATE, PAUSE_STATE,
 CLEAR_SHORT_STATE);

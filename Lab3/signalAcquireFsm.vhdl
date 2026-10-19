@@ -33,26 +33,70 @@ architecture Behavioral of signalAcquire_Fsm is
 
 	signal state: state_type;
 	
-	signal SHORT_DELAY_DONE_SW, <complete>;
+	signal SHORT_DELAY_DONE_SW, LONG_DELAY_DONE_SW, START_CONV_SW: std_logic;
+    signal BUSY_SW, ALL_CHANNELS_HAVE_BEEN_READ_SW: std_logic;
 
 begin
 
     -- defining intuitive names for the status word bits to make interperting the
     -- logic in the state_process much easier and thus, you'll make fewer errors.
     SHORT_DELAY_DONE_SW <= sw(SHORT_DELAY_DONE_SW_BIT_INDEX);
+    LONG_DELAY_DONE_SW <= sw(LONG_DELAY_DONE_SW_BIT_INDEX);
+    START_CONV_SW <= sw(START_CONV_SW_BIT_INDEX);
+    BUSY_SW <= sw(BUSY_SW_BIT_INDEX);
+    ALL_CHANNELS_HAVE_BEEN_READ_SW <= sw(ALL_CHANNELS_HAVE_BEEN_READ_SW_BIT_INDEX);
     
 	-------------------------------------------------------------------------------
 	-------------------------------------------------------------------------------
 	state_proces: process(clk)  
 	begin
 		if (rising_edge(clk)) then
-			if (resetn = '0') then 
+			if (resetn = '0') then
 				state <= RESET_STATE;
 			else 
 				case state is
-
-				<complete>
-
+                    when RESET_STATE =>
+                        state <= LONG_DELAY_STATE;
+                    when LONG_DELAY_STATE =>
+                        if (LONG_DELAY_DONE_SW = '1') then
+                            state <= RESET_ADC_STATE;
+                        end if;
+                    when RESET_ADC_STATE =>
+                        if (SHORT_DELAY_DONE_SW = '1') then
+                            state <= WAIT_TRIGGER_STATE;
+                        end if;
+                    when WAIT_TRIGGER_STATE =>
+                        if (START_CONV_SW = '1') then
+                            state <= ASSERT_CONVST_STATE;
+                        end if;
+                    when ASSERT_CONVST_STATE =>
+                        if (SHORT_DELAY_DONE_SW = '1') then
+                            state <= WAIT_BUSY0_STATE;
+                        end if;
+                    when WAIT_BUSY0_STATE =>
+                        if (BUSY_SW = '1') then
+                            state <= WAIT_BUSY1_STATE;
+                        end if;
+                    when WAIT_BUSY1_STATE =>
+                        if (BUSY_SW = '0') then
+                            state <= WAIT_DATA_STATE;
+                        end if;
+                    when WAIT_DATA_STATE =>
+                        if (SHORT_DELAY_DONE_SW = '1') then
+                            state <= LATCH_STATE;
+                        end if;
+                    when LATCH_STATE =>
+                        state <= PAUSE_STATE;
+                    when PAUSE_STATE =>
+                        if (SHORT_DELAY_DONE_SW = '1') then
+                            state <= CLEAR_SHORT_STATE;
+                        end if;
+                    when CLEAR_SHORT_STATE =>
+                        if (ALL_CHANNELS_HAVE_BEEN_READ_SW = '1') then
+                            state <= WAIT_TRIGGER_STATE;
+                        else
+                            state <= WAIT_DATA_STATE;
+                        end if;
 				end case;
 			end if;
 		end if;
@@ -68,10 +112,17 @@ begin
 	output_process: process (state)
 	begin
 	    case state is
-                when RESET_STATE =>    cw <= <complete>;
-
- 		<complete>
-
+            when RESET_STATE => cw <= "11101111110";
+            when LONG_DELAY_STATE => cw <= "11101011000";
+            when RESET_ADC_STATE => cw <= "11110010000";
+            when WAIT_TRIGGER_STATE => cw <= "11100011000";
+            when ASSERT_CONVST_STATE => cw <= "01100010000";
+            when WAIT_BUSY0_STATE => cw <= "11100000000";
+            when WAIT_BUSY1_STATE => cw <= "11100011110";
+            when WAIT_DATA_STATE => cw <= "10000010000";
+            when LATCH_STATE => cw <= "11000011001";
+            when PAUSE_STATE => cw <= "11000010000";
+            when CLEAR_SHORT_STATE => cw <= "11000011100";
 		end case;
 	end process;
 
