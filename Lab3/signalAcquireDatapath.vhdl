@@ -101,7 +101,7 @@ begin
             clk => clk,
             resetn => resetn,
             c => longCtrl,
-            d => x"00",
+            d => x"000000",
             q => longCnt
         );
 
