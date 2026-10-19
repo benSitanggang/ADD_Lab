@@ -17,7 +17,8 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
-					-- Include any packages that are instantiated
+use work.basicBuildingBlocks_package.all;
+use work.signalAcquire_Package.all;
 
 
 entity signalAcquire is
@@ -32,13 +33,92 @@ entity signalAcquire is
 end signalAcquire;
 
 architecture behavior of signalAcquire is
-
-	<complete>
-	
-    	
+	signal sw: STD_LOGIC_VECTOR(SW_WIDTH - 1 downto 0);
+    signal cw: STD_LOGIC_VECTOR(CW_WIDTH - 1 downto 0);
+    signal datapath_sw: STD_LOGIC_VECTOR(DATAPATH_SW_WIDTH - 1 downto 0);
+    signal rfData: STD_LOGIC_VECTOR(15 downto 0);
+    signal trigger, conversionButton, prevButton: STD_LOGIC;
 begin
-
-
-	<complete>
+    
+    sw(START_CONV_SW_BIT_INDEX) <= trigger;
+    sw(BUSY_SW_BIT_INDEX) <= an7606busy;
+    sw(DATAPATH_SW_WIDTH - 1 downto 0) <= datapath_sw;
+    conversionButton <= btn(0);
+    an7606convst <= cw(CONVST_CW_BIT_INDEX);
+    an7606rd <= cw(RD_CW_BIT_INDEX);
+    an7606cs <= cw(CS_CW_BIT_INDEX);
+    an7606reset <= cw(RESET_AD7606_CW_BIT_INDEX);
+    an7606od <= "000";
+    
+    controlUnit: signalAcquire_Fsm
+	   port map(
+	       clk => clk,
+	       resetn => resetn,
+	       sw => sw,
+	       cw => cw
+	   );
+	   
+    datapath: signalAcquire_Datapath
+        port map(
+            clk => clk,
+            resetn => resetn,
+            cw => cw,
+            sw => datapath_sw,
+            an7606data => an7606data,
+            rfAddr => "000",
+            rfData => rfData
+        );
+    
+    buttonProcess: process(clk)
+    begin
+        if (rising_edge(clk)) then
+            prevButton <= conversionButton;
+            if (prevButton = '0' and conversionButton = '1') then
+                trigger <= '1';
+            else
+                trigger <= '0';
+            end if;
+        end if;
+    end process;
+    
+    compare1: genericCompare
+        generic map(16)
+        port map(
+            x => rfData,
+            y => FIRST_THRESHOLD_CONSTANT,
+            g => open,
+            l => reg0Magnitude(0),
+            e => open
+        );
+        
+    compare2: genericCompare
+        generic map(16)
+        port map(
+            x => rfData,
+            y => SECOND_THRESHOLD_CONSTANT,
+            g => open,
+            l => reg0Magnitude(1),
+            e => open
+        );
+        
+    compare3: genericCompare
+        generic map(16)
+        port map(
+            x => rfData,
+            y => THIRD_THRESHOLD_CONSTANT,
+            g => open,
+            l => reg0Magnitude(2),
+            e => open
+        );
+        
+    compare4: genericCompare
+        generic map(16)
+        port map(
+            x => rfData,
+            y => FOURTH_THRESHOLD_CONSTANT,
+            g => open,
+            l => reg0Magnitude(3),
+            e => open
+        );
  
 end behavior;
