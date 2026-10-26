@@ -3,6 +3,7 @@
 
 # Allow directory traversal
 !*/
+*.*/
 
 # Whitelist VHDL files only
 !*.vhd
