@@ -10,7 +10,7 @@ use work.hdmi_package.all;
 
 package acquireToHDMI_package is
 
-
+-- Skibidi comment
 -- Clock period definitions
 CONSTANT clk_period : time := 20 ns;			-- 50Mhz crystal input (XTL_IN).
 

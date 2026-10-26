@@ -3,7 +3,9 @@
 
 # Allow directory traversal
 !*/
-*.*/
+
+# Ignore random project files
+*Lab*.*/
 
 # Whitelist VHDL files only
 !*.vhd
