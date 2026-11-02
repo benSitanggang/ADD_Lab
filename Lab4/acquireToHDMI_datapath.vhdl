@@ -47,9 +47,9 @@ end acquireToHDMI_datapath;
 architecture behavior of acquireToHDMI_datapath is
 
     signal storeIntoBramFlag, bramFull, sample: STD_LOGIC;
-    signal videoClk, hs, vs, de: std_logic;
+    signal videoClk, videoClk5x, hs, vs, de, clkLocked: std_logic;
     signal ch1, ch2, ch1Trig, ch2Trig: std_logic;
-    signal short, long: std_logic;
+    signal short, long, reset: std_logic;
     signal pixelH, pixelV, wrAddr: STD_LOGIC_VECTOR(VIDEO_WIDTH_IN_BITS-1 downto 0);
     signal trigVscr: STD_LOGIC_VECTOR(VIDEO_WIDTH_IN_BITS-1 downto 0);
     signal red, green, blue: STD_LOGIC_VECTOR(7 downto 0);
@@ -104,10 +104,6 @@ begin
             green => green,
             blue => blue
         );
-    
-    -- put hdmi instantiation here
-    
-    
    
     -- BRAM Write Address Counter
     wrAddrCounter: genericCounter
@@ -199,12 +195,42 @@ begin
             vertPixel => trigVscr
         );
       
+    -- clock wizard
     vc: clk_wiz_0
         PORT MAP (
             clk_in1 => clk,
             clk_out1 => videoClk,
             resetn => resetn,
-            clk_out2 => videoClk5x);
+            clk_out2 => videoClk5x,
+            locked => clkLocked
+        );
+        
+    -- HDMI instantiation
+    reset <= not resetn;
+    
+    hdmi_inst: hdmi_tx_0
+        port map(
+            pix_clk => videoClk,
+            pix_clkx5 => videoClk5x,
+            pix_clk_locked => clkLocked,
+            rst => reset,
+            red => red,
+            green => green,
+            blue => blue,
+            hsync => hs,
+            vsync => vs,
+            vde => de,
+            aux0_din => "0000",
+            aux1_din => "0000",
+            aux2_din => "0000",
+            ade => '0',
+            TMDS_CLK_P => tmdsClkP,
+            TMDS_CLK_N => tmdsClkN,
+            TMDS_DATA_P => tmdsDataP,
+            TMDS_DATA_N => tmdsDataN
+        );
+     
+    hdmiOen <= '1';
 
     -- long counter/compare pair
     longCounter: genericCounter
