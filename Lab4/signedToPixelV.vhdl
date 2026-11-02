@@ -21,9 +21,9 @@ architecture structure of signedToPixelV is
     
 begin
     aSigned16 <= signed(signedValue);
-    bSigned16 <= to_signed(-600, 16); -- replace this value
+    bSigned16 <= to_signed(-500, 16); -- replace this value
     xSigned32 <= aSigned16 * bSigned16;
     ySigned32 <= shift_right(xSigned32, 16);
-    zSigned32 <= ySigned32 + to_signed(400, 32); -- replace this value
+    zSigned32 <= ySigned32 + to_signed(360, 32); -- replace this value
     vertPixel <= std_logic_vector(zSigned32(VIDEO_WIDTH_IN_BITS-1 downto 0));
 end structure;
