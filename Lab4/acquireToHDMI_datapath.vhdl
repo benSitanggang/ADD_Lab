@@ -48,7 +48,7 @@ architecture behavior of acquireToHDMI_datapath is
 
     signal storeIntoBramFlag, bramFull, sample: STD_LOGIC;
     signal videoClk, hs, vs, de: std_logic;
-    signal ch1, ch2: std_logic;
+    signal ch1, ch2, ch1Trig, ch2Trig: std_logic;
     signal short, long: std_logic;
     signal pixelH, pixelV, wrAddr: STD_LOGIC_VECTOR(VIDEO_WIDTH_IN_BITS-1 downto 0);
     signal trigVscr: STD_LOGIC_VECTOR(VIDEO_WIDTH_IN_BITS-1 downto 0);
@@ -132,6 +132,33 @@ begin
         );
     
     sw(FULL_SW_BIT_INDEX) <= bramFull;
+    
+    -- Trigger generators
+    ch1TrigGen: trigGenerator
+        port map(
+            clk => clk,
+            resetn => resetn,
+            an7606data => an7606data,
+            signedTrigVolt16 => triggerVolt16bitSigned,
+            regCtrl => cw(TRIG_CH1_WRITE_CW_BIT_INDEX),
+            slvData16 => ch1Data16bitSLV,
+            trigger => ch1Trig
+        );
+        
+    sw(CHANNEL1_TRIG_SW_BIT_INDEX) <= ch1Trig;
+    
+    ch2TrigGen: trigGenerator
+        port map(
+            clk => clk,
+            resetn => resetn,
+            an7606data => an7606data,
+            signedTrigVolt16 => triggerVolt16bitSigned,
+            regCtrl => cw(TRIG_CH2_WRITE_CW_BIT_INDEX),
+            slvData16 => ch2Data16bitSLV,
+            trigger => ch2Trig
+        );
+        
+    sw(CHANNEL2_TRIG_SW_BIT_INDEX) <= ch2Trig;
    
     -- signedToPixel & pixel compare instances
     ch1SignedToPix: signedToPixelV

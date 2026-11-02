@@ -94,6 +94,17 @@ component signedToPixelV is
     );
 end component;
 
+component trigGenerator is
+    port(
+        clk, resetn: in std_logic;
+        an7606data: in std_logic_vector(15 downto 0);
+        signedTrigVolt16: in signed(15 downto 0);
+        regCtrl: in std_logic;
+        slvData16: out std_logic_vector(15 downto 0);
+        trigger: out std_logic
+    );
+end component;
+
 component blk_mem_gen_0 is
   PORT (
     clka : IN STD_LOGIC;
