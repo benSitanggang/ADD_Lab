@@ -5,6 +5,7 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 use IEEE.NUMERIC_STD.ALL;
+use work.scopeToHdmi_package.all;
 
 
 package acquireToHDMI_package is
@@ -66,8 +67,8 @@ CONSTANT SHORT_DELAY_50Mhz_COUNTS : STD_LOGIC_VECTOR(SHORT_DELAY_50Mhz_CONST_WID
 
 CONSTANT HIGHEST_RATE   : STD_LOGIC_VECTOR(31 downto 0) := STD_LOGIC_VECTOR(to_unsigned(300, 32));
 CONSTANT HIGH_RATE      : STD_LOGIC_VECTOR(31 downto 0) := STD_LOGIC_VECTOR(to_unsigned(600, 32));
-CONSTANT LOWEST_RATE    : STD_LOGIC_VECTOR(31 downto 0) := STD_LOGIC_VECTOR(to_unsigned(1200, 32));
-CONSTANT LOW_RATE       : STD_LOGIC_VECTOR(31 downto 0) := STD_LOGIC_VECTOR(to_unsigned(2400, 32));
+CONSTANT LOW_RATE    : STD_LOGIC_VECTOR(31 downto 0) := STD_LOGIC_VECTOR(to_unsigned(1200, 32));
+CONSTANT LOWEST_RATE       : STD_LOGIC_VECTOR(31 downto 0) := STD_LOGIC_VECTOR(to_unsigned(2400, 32));
 
 component acquireToHDMI_fsm is
 end component;
@@ -85,6 +86,13 @@ component an7606 is
            an7606od: in STD_LOGIC_VECTOR(2 downto 0);
            an7606busy : out STD_LOGIC);
 END component;
+
+component signedToPixelV is
+    port(
+        signedValue: in std_logic_vector(15 downto 0);
+        vertPixel: out STD_LOGIC_VECTOR(VIDEO_WIDTH_IN_BITS-1 downto 0)
+    );
+end component;
 
 component blk_mem_gen_0 is
   PORT (

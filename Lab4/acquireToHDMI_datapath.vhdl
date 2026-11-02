@@ -21,9 +21,9 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.NUMERIC_STD.ALL;
 
-use work.acquireToHDMI_Package.all;			
-use work.basicBuildingBlocks_package.all;		
-use work.hdmi_package.all;
+use work.acquireToHDMI_package.all;	
+use work.scopeToHdmi_package.all;		
+use work.basicBuildingBlocks_package.all;
 
 entity acquireToHDMI_datapath is
     PORT ( clk : in  STD_LOGIC;
@@ -46,7 +46,18 @@ end acquireToHDMI_datapath;
 
 architecture behavior of acquireToHDMI_datapath is
 
-    signal storeIntoBramFlag: STD_LOGIC;
+    signal storeIntoBramFlag, bramFull, sample: STD_LOGIC;
+    signal videoClk, hs, vs, de: std_logic;
+    signal ch1, ch2: std_logic;
+    signal short, long: std_logic;
+    signal pixelH, pixelV, wrAddr: STD_LOGIC_VECTOR(VIDEO_WIDTH_IN_BITS-1 downto 0);
+    signal trigVscr: STD_LOGIC_VECTOR(VIDEO_WIDTH_IN_BITS-1 downto 0);
+    signal red, green, blue: STD_LOGIC_VECTOR(7 downto 0);
+    signal ch1doutb, ch2doutb: std_logic_vector(15 downto 0);
+    signal ch1pixel, ch2pixel: std_logic_vector(VIDEO_WIDTH_IN_BITS-1 downto 0);
+    signal longCount: std_logic_vector(LONG_DELAY_50Mhz_CONST_WIDTH-1 downto 0);
+    signal shortCount: std_logic_vector(SHORT_DELAY_50Mhz_CONST_WIDTH-1 downto 0);
+    signal sampleCount, sampleRate: std_logic_vector(31 downto 0);
     
 begin
 
@@ -64,9 +75,102 @@ begin
         end if;
     end process;
 
-    sw(STORE_INTO_BRAM_SW_BIT_INDEX) <= storeIntoBramFlag;
+    sw(STORE_SW_BIT_INDEX) <= storeIntoBramFlag;
     
- 
+    vsg: videoSignalGenerator
+        port map(
+            clk => videoClk,
+            resetn => resetn,
+            hs => hs,
+            vs => vs,
+            de => de,
+            pixelHorz => pixelH,
+            pixelVert => pixelV
+        );
+    
+    scopeFace_inst: scopeFace
+        port map(
+            clk => videoClk,
+            resetn => resetn,
+            pixelH => pixelH,
+            pixelV => pixelV,
+            triggerTime => triggerTimePixel,
+            triggerVolt => trigVscr,
+            ch1 => ch1,
+            ch1enb => '1',
+            ch2 => ch2,
+            ch2enb => '1',
+            red => red,
+            green => green,
+            blue => blue
+        );
+    
+    -- put hdmi instantiation here
+    
+    
+   
+    -- BRAM Write Address Counter
+    wrAddrCounter: genericCounter
+        generic map(VIDEO_WIDTH_IN_BITS)
+        port map(
+            clk => clk,
+            resetn => resetn,
+            c => cw(DATA_STORAGE_COUNTER_CW_MSB_INDEX downto DATA_STORAGE_COUNTER_CW_MSB_INDEX-1),
+            d => (others => '0'),
+            q => wrAddr
+        );
+     
+    -- BRAM Full Compare
+    fullCompare: genericCompare
+        generic map(VIDEO_WIDTH_IN_BITS)
+        port map(
+            x => wrAddr,
+            y => WIDTH,
+            g => bramFull,
+            l => open,
+            e => open
+        );
+    
+    sw(FULL_SW_BIT_INDEX) <= bramFull;
+   
+    -- signedToPixel & pixel compare instances
+    ch1SignedToPix: signedToPixelV
+        port map(
+            signedValue => ch1doutb,
+            vertPixel => ch1pixel
+        );
+        
+    ch1Generator: genericCompare
+        generic map(VIDEO_WIDTH_IN_BITS)
+        port map(
+            x => ch1pixel,
+            y => pixelV,
+            g => open,
+            l => open,
+            e => ch1
+        );
+        
+    ch2SignedToPix: signedToPixelV
+        port map(
+            signedValue => ch2doutb,
+            vertPixel => ch2pixel
+        );
+    
+    ch2Generator: genericCompare
+        generic map(VIDEO_WIDTH_IN_BITS)
+        port map(
+            x => ch2pixel,
+            y => pixelV,
+            g => open,
+            l => open,
+            e => ch2
+        );
+        
+    trigSignedToPix: signedToPixelV
+        port map(
+            signedValue => std_logic_vector(triggerVolt16bitSigned),
+            vertPixel => trigVscr
+        );
       
     vc: clk_wiz_0
         PORT MAP (
@@ -75,6 +179,84 @@ begin
             resetn => resetn,
             clk_out2 => videoClk5x);
 
-
+    -- long counter/compare pair
+    longCounter: genericCounter
+        generic map(LONG_DELAY_50Mhz_CONST_WIDTH)
+        port map(
+            clk => clk,
+            resetn => resetn,
+            c => cw(LONG_DELAY_COUNTER_CW_MSB_INDEX downto LONG_DELAY_COUNTER_CW_MSB_INDEX-1),
+            d => x"000000",
+            q => longCount
+        );
+    
+    longCompare: genericCompare
+        generic map(LONG_DELAY_50Mhz_CONST_WIDTH)
+        port map(
+            x => longCount,
+            y => LONG_DELAY_50Mhz_COUNTS,
+            g => open,
+            l => open,
+            e => long
+        );
+    
+    sw(LONG_SW_BIT_INDEX) <= long;
+    
+    -- short counter/compare pair
+    shortCounter: genericCounter
+        generic map(SHORT_DELAY_50Mhz_CONST_WIDTH)
+        port map(
+            clk => clk,
+            resetn => resetn,
+            c => cw(SHORT_DELAY_COUNTER_CW_MSB_INDEX downto SHORT_DELAY_COUNTER_CW_MSB_INDEX-1),
+            d => x"00",
+            q => shortCount
+        );
+    
+    shortCompare: genericCompare
+        generic map(SHORT_DELAY_50Mhz_CONST_WIDTH)
+        port map(
+            x => shortCount,
+            y => SHORT_DELAY_50Mhz_COUNTS,
+            g => open,
+            l => open,
+            e => short
+        );
+        
+    sw(SHORT_SW_BIT_INDEX) <= short;
+    
+    -- Sample rate generator blocks
+    sampleCounter: genericCounter
+        generic map(32)
+        port map(
+            clk => clk,
+            resetn => resetn,
+            c => cw(SAMPLING_COUNTER_CW_MSB_INDEX downto SAMPLING_COUNTER_CW_MSB_INDEX-1),
+            d => (others => '0'),
+            q => sampleCount
+        );
+    
+    rateMux: genericMux4x1
+        generic map(32)
+        port map(
+            y3 => LOWEST_RATE,
+            y2 => LOW_RATE,
+            y1 => HIGH_RATE,
+            y0 => HIGHEST_RATE,
+            s => cw(SAMPLING_RATE_SELECT_CW_MSB_INDEX downto SAMPLING_RATE_SELECT_CW_MSB_INDEX-1),
+            f => sampleRate
+        );
+    
+    sampleCompare: genericCompare
+        generic map(32)
+        port map(
+            x => sampleCount,
+            y => sampleRate,
+            g => open,
+            l => open,
+            e => sample
+        );
+    
+    sw(SAMPLE_SW_BIT_INDEX) <= sample;    
 
 end behavior;
