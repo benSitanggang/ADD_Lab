@@ -50,7 +50,7 @@ architecture behavior of acquireToHDMI_datapath is
     signal videoClk, videoClk5x, hs, vs, de, clkLocked: std_logic;
     signal ch1, ch2, ch1Trig, ch2Trig: std_logic;
     signal short, long, reset: std_logic;
-    signal pixelH, pixelV, wrAddr: STD_LOGIC_VECTOR(VIDEO_WIDTH_IN_BITS-1 downto 0);
+    signal pixelH, pixelV, wrAddr, rdAddr: STD_LOGIC_VECTOR(VIDEO_WIDTH_IN_BITS-1 downto 0);
     signal trigVscr: STD_LOGIC_VECTOR(VIDEO_WIDTH_IN_BITS-1 downto 0);
     signal red, green, blue: STD_LOGIC_VECTOR(7 downto 0);
     signal ch1doutb, ch2doutb: std_logic_vector(15 downto 0);
@@ -128,6 +128,35 @@ begin
         );
     
     sw(FULL_SW_BIT_INDEX) <= bramFull;
+    
+    -- BRAM Instances
+    rdAddr <= std_logic_vector(unsigned(pixelH) - unsigned(L_EDGE)); -- might be sketchy?
+    
+    ch1BRAM: blk_mem_gen_0
+        port map(
+            clka => clk,
+            ena => '1',
+            wea => cw(DATA_STORAGE_CH1_WRITE_CW_BIT_INDEX downto DATA_STORAGE_CH1_WRITE_CW_BIT_INDEX),
+            addra => wrAddr,
+            dina => an7606data,
+            clkb => videoClk,
+            enb => '1',
+            addrb => rdAddr,
+            doutb => ch1doutb
+        );
+    
+    ch2BRAM: blk_mem_gen_0
+        port map(
+            clka => clk,
+            ena => '1',
+            wea => cw(DATA_STORAGE_CH2_WRITE_CW_BIT_INDEX downto DATA_STORAGE_CH2_WRITE_CW_BIT_INDEX),
+            addra => wrAddr,
+            dina => an7606data,
+            clkb => videoClk,
+            enb => '1',
+            addrb => rdAddr,
+            doutb => ch2doutb
+        );
     
     -- Trigger generators
     ch1TrigGen: trigGenerator
