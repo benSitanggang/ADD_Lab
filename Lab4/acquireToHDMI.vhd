@@ -3,7 +3,7 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 use work.acquireToHDMI_package.all;					-- include your library here with added components ac97, ac97cmd
-use work.hdmi_package.all;
+use work.scopeToHdmi_package.all;
 use work.basicBuildingBlocks_package.all;					-- include your library here with added components ac97, ac97cmd
 
 
@@ -33,6 +33,7 @@ architecture behavior of acquireToHDMI is
     signal cw: STD_LOGIC_VECTOR(CW_WIDTH -1 downto 0);
     signal sw: STD_LOGIC_VECTOR(SW_WIDTH -1 downto 0);
     signal forcedMode: STD_LOGIC;
+    signal buttonActivity, prevBtn: std_logic_vector(2 downto 0);
         	
 begin
 
@@ -40,26 +41,59 @@ begin
     sampleTimerRollover <= cw(SAMPLE_TIMER_ROLLOVER_CW_BIT_INDEX);
     
     an7606convst <= cw(CONVST_CW_BIT_INDEX);    
+    an7606cs <= cw(CS_CW_BIT_INDEX);
+    an7606rd <= cw(RD_CW_BIT_INDEX);
+    an7606reset <= cw(RESET_AD7606_CW_BIT_INDEX);
     an7606od <= "000"; 
 
     ------------------------------------------------------------------------------
     -- Button Process
     ------------------------------------------------------------------------------
-
+    buttonProcessThing: process(clk)
+    begin
+        if (rising_edge(clk)) then
+            if (resetn = '0') then
+                forcedMode <= '1';
+                buttonActivity <= "000";
+                prevBtn <= "111";
+            else
+                prevBtn <= btn;
+                buttonActivity <= (prevBtn xor btn) and btn;
+                forcedMode <= forcedMode xor buttonActivity(1); -- this is sketchy, double check validity
+            end if;
+        end if;
+    end process;
     
-    
-    sw(SINGLE_FORCED_TRIGGER_SW_BIT_INDEX) <= buttonActivity(0);
-    triggerCh2 <= sw(CH2_TRIGGER_SW_BIT_INDEX);
+    sw(FORCED_MODE_SW_BIT_INDEX) <= forcedMode;
+    sw(SINGLE_SW_BIT_INDEX) <= buttonActivity(0);
+    sw(BUSY_SW_BIT_INDEX) <= an7606busy;
+    triggerCh1 <= sw(CHANNEL1_TRIG_SW_BIT_INDEX);
+    triggerCh2 <= sw(CHANNEL2_TRIG_SW_BIT_INDEX);
 
  	datapath_inst: acquireToHDMI_datapath 
+        port map(
+            clk => clk,
+            resetn => resetn,
+            cw => cw,
+            sw => sw(DATAPATH_SW_WIDTH - 1 downto 0),
+            an7606data => an7606data,
+            triggerVolt16bitSigned => (others => '0'),
+            triggerTimePixel => M_HORZ,
             ch1Data16bitSLV => open,
-	);
+            ch2Data16bitSLV => open,
+            tmdsDataP => tmdsDataP,
+            tmdsDataN => tmdsDataN,
+            tmdsClkP => tmdsClkP,
+            tmdsClkN => tmdsClkN,
+            hdmiOen => hdmiOen
+        );
                 
 	control_inst: acquireToHDMI_fsm 
 	   PORT MAP ( 
             clk => clk,
             resetn => resetn,
             sw => sw,
-            cw => cw);
+            cw => cw
+       );
 
 end behavior;
