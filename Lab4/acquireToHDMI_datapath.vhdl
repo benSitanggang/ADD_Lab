@@ -334,9 +334,9 @@ begin
         port map(
             x => sampleCount,
             y => sampleRate,
-            g => open,
+            g => sample,
             l => open,
-            e => sample
+            e => open
         );
     
     sw(SAMPLE_SW_BIT_INDEX) <= sample;    
